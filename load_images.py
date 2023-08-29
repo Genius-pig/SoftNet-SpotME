@@ -7,9 +7,9 @@ import dlib
 import numpy as np
 import cv2
 
+
 # crop这里是裁剪的意思，这里为裁剪
 def crop_images(dataset_name):
-
     # 获取脸的检测器
     face_detector = dlib.get_frontal_face_detector()
 
@@ -120,7 +120,7 @@ def load_images(dataset_name):
             print('Subject: ' + dir_vid.split('\\')[-1].split('_')[0])
             subject = dir_vid.split('\\')[-1].split('_')[0]
             subjectVideo = dir_vid.split('\\')[-1]
-            if (subject not in subjects):  # Only append unique subject name
+            if subject not in subjects:  # Only append unique subject name
                 subjects.append(subject)
                 subjectsVideos.append([])
             subjectsVideos[-1].append(dir_vid.split('\\')[-1])

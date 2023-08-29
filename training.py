@@ -143,10 +143,10 @@ def spotting(result, total_gt, final_samples, subject_count, dataset, k, metric_
     for videoIndex, video in enumerate(final_samples[subject_count - 1]):
         preds = []
         gt = []
-        countVideo = len([video for subject in final_samples[:subject_count - 1] for video in subject])
-        print('Video:', countVideo + videoIndex)
+        count_video = len([video for subject in final_samples[:subject_count - 1] for video in subject])
+        print('Video:', count_video + videoIndex)
         score_plot = np.array(
-            result[prev:prev + len(dataset[countVideo + videoIndex])])  # Get related frames to each video
+            result[prev:prev + len(dataset[count_video + videoIndex])])  # Get related frames to each video
         score_plot_agg = score_plot.copy()
 
         # Score aggregation
@@ -154,9 +154,9 @@ def spotting(result, total_gt, final_samples, subject_count, dataset, k, metric_
             score_plot_agg[x + k] = score_plot[x:x + 2 * k].mean()
         score_plot_agg = score_plot_agg[k:-k]
 
-        # Plot the result to see the peaks
-        # Note for some video the ground truth samples is below frame index 0 due to the effect of aggregation, but no impact to the evaluation
-        if (show_plot):
+        # Plot the result to see the peaks Note for some video the ground truth samples is below frame index 0 due to
+        # the effect of aggregation, but no impact to the evaluation
+        if show_plot:
             plt.figure(figsize=(15, 4))
             plt.plot(score_plot_agg)
             plt.xlabel('Frame')
@@ -164,21 +164,20 @@ def spotting(result, total_gt, final_samples, subject_count, dataset, k, metric_
         threshold = score_plot_agg.mean() + p * (
                     max(score_plot_agg) - score_plot_agg.mean())  # Moilanen threshold technique
         peaks, _ = find_peaks(score_plot_agg[:, 0], height=threshold[0], distance=k)
-        if (
-                len(peaks) == 0):  # Occurs when no peak is detected, simply give a value to pass the exception in mean_average_precision
+        if len(peaks) == 0:  # Occurs when no peak is detected, simply give a value to pass the exception in mean_average_precision
             preds.append([0, 0, 0, 0, 0, 0])
         for peak in peaks:
             preds.append([peak - k, 0, peak + k, 0, 0, 0])  # Extend left and right side of peak by k frames
         for samples in video:
             gt.append([samples[0] - k, 0, samples[1] - k, 0, 0, 0, 0])
             total_gt += 1
-            if (show_plot):
+            if show_plot:
                 plt.axvline(x=samples[0] - k, color='r')
                 plt.axvline(x=samples[1] - k + 1, color='r')
                 plt.axhline(y=threshold, color='g')
-        if (show_plot):
+        if show_plot:
             plt.show()
-        prev += len(dataset[countVideo + videoIndex])
+        prev += len(dataset[count_video + videoIndex])
         metric_fn.add(np.array(preds), np.array(gt))  # IoU = 0.5 according to MEGC2020 metrics
     return preds, gt, total_gt
 
@@ -225,10 +224,10 @@ def training(X, y, groupsLabel, dataset_name, expression_type, final_samples, k,
             rem_index.sort()
             X_train = [X_train[i] for i in rem_index]
             y_train = [y_train[i] for i in rem_index]
-            print('After Downsampling Dataset Labels', Counter(y_train))
+            print('After down sampling Dataset Labels', Counter(y_train))
 
             # Data augmentation to the micro-expression samples only
-            if (expression_type == 'micro-expression'):
+            if expression_type == 'micro-expression':
                 X_train, y_train = data_augmentation(X_train, y_train)
                 print('After Augmentation Dataset Labels', Counter(y_train))
 

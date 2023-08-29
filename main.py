@@ -6,7 +6,7 @@ from extraction_preprocess import *
 from training import *
 
 
-##Note that the whole process will take a long time... please be patient
+# Note that the whole process will take a long time... please be patient
 def main(config):
     # Define the dataset and expression to spot
     dataset_name = config.dataset_name
@@ -26,10 +26,10 @@ def main(config):
 
     # Load Ground Truth Label
     print('\n ------ Loading Excel ------')
-    codeFinal = load_excel(dataset_name)
+    code_final = load_excel(dataset_name)
     print('\n ------ Loading Ground Truth From Excel ------')
     final_images, final_videos, final_subjects, final_samples = load_gt(dataset_name, expression_type, images,
-                                                                        subjects_videos, subjects, codeFinal)
+                                                                        subjects_videos, subjects, code_final)
     print('\n ------ Computing k ------')
     k = cal_k(dataset_name, expression_type, final_samples)
 
@@ -43,11 +43,11 @@ def main(config):
 
     # LOSO
     print('\n ------ Leave one Subject Out ------')
-    X, y, groupsLabel = loso(dataset, pseudo_y, final_images, final_samples, k)
+    X, y, groups_label = loso(dataset, pseudo_y, final_images, final_samples, k)
 
     # Model Training & Evaluation
     print('\n ------ SOFTNet Training & Testing ------')
-    TP, FP, FN, metric_fn = training(X, y, groupsLabel, dataset_name, expression_type, final_samples, k, dataset, train,
+    TP, FP, FN, metric_fn = training(X, y, groups_label, dataset_name, expression_type, final_samples, k, dataset, train,
                                      show_plot)
     final_evaluation(TP, FP, FN, metric_fn)
 
